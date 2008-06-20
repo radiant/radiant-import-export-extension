@@ -1,0 +1,16 @@
+= Import Export
+
+Supports a more enhanced version of exporting your Radiant database, and 
+adds the ability to import the results of an export operation.
+
+To import use: 
+
+ $ rake db:import [TEMPLATE=path/to/export.yml]
+
+To export, browse to /admin/export or use:
+
+ $ rake db:export [TEMPLATE=path/to/export.yml]
+ 
+
+by Sean Cribbs
+   April 18, 2007
