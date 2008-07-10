@@ -1,10 +1,11 @@
 namespace :db do
   desc "Import a database template from db/export.yml. Specify the TEMPLATE environment variable to load a different template. This is not intended for new installations, but restoration from previous exports."
-  task :import => ["db:remigrate", "db:migrate:extensions"] do
-    say "ERROR: Specify a template to load with the TEMPLATE environment variable." and exit unless (ENV['TEMPLATE'] and File.exists?(ENV['TEMPLATE'])) or File.exists?("#{RADIANT_ROOT}/db/export.yml")
+  task :import => ["db:remigrate:extensions", "db:remigrate"] do
+    say "ERROR: Specify a template to load with the TEMPLATE environment variable." and exit unless (ENV['TEMPLATE'] and File.exists?(ENV['TEMPLATE'])) or File.exists?("#{RAILS_ROOT}/db/export.yml")
     
     # Use what Radiant::Setup for the heavy lifting
     require 'radiant/setup'
+    require 'lib/radiant_setup_create_records_patch'
     setup = Radiant::Setup.new
     
     # Load the data from the export file
@@ -15,15 +16,15 @@ namespace :db do
     passwords = []
     users_only['records']['Users'].each do |id, attributes|
       if attributes['password']
-        passwords << [attributes['id'], attributes['password']]
+        passwords << [attributes['id'], attributes['password'], attributes['salt']]
         attributes['password'] = 'radiant'
         attributes['password_confirmation'] = 'radiant'
       end
     end
     setup.send :create_records, users_only
     # Hack to get passwords transferred correctly.
-    passwords.each do |id, password|
-      User.update_all({:password => password}, ['id = ?', id])
+    passwords.each do |id, password, salt|
+      User.update_all({:password => password, :salt => salt}, ['id = ?', id])
     end
     
     # Now load the created users into the hash and load the rest of the data
