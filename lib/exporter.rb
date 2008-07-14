@@ -1,6 +1,6 @@
 class Exporter
   cattr_accessor :models
-  self.models = [Radiant::Config, User, Page, PagePart, Snippet, Layout]
+  self.models = [Radiant::ExtensionMeta, Radiant::Config, User, Page, PagePart, Snippet, Layout]
   
   def self.export
     hash = {'name' => 'Last export', 'description' => "Backup of the database as of #{Time.now.to_s(:rfc822)}"}

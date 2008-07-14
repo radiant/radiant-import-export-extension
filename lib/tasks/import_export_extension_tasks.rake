@@ -1,6 +1,6 @@
 namespace :db do
   desc "Import a database template from db/export.yml. Specify the TEMPLATE environment variable to load a different template. This is not intended for new installations, but restoration from previous exports."
-  task :import => ["db:remigrate:extensions", "db:remigrate"] do
+  task :import => ["db:schema:load"] do
     say "ERROR: Specify a template to load with the TEMPLATE environment variable." and exit unless (ENV['TEMPLATE'] and File.exists?(ENV['TEMPLATE'])) or File.exists?("#{RAILS_ROOT}/db/export.yml")
     
     # Use what Radiant::Setup for the heavy lifting
@@ -39,7 +39,7 @@ namespace :db do
   end
   
   desc "Export a database template to db/export.yml. Specify the TEMPLATE environment variable to use a different file."
-  task :export => :environment do
+  task :export => ["db:schema:dump"] do
     template_name = ENV['TEMPLATE'] || "#{RAILS_ROOT}/db/export.yml"
     File.open(template_name, "w") {|f| f.write Exporter.export }
   end
