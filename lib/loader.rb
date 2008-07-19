@@ -4,5 +4,6 @@ module Loader
     tables.delete "config"
     models = tables.collect { |table| table.camelize.singularize.constantize rescue nil}.compact
     models << Radiant::Config
+    models << Radiant::ExtensionMeta
   end
 end
