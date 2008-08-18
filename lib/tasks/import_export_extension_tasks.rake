@@ -32,7 +32,10 @@ namespace :db do
     data['records'].each do |klass, records|
       records.each do |key, attributes|
         if attributes.has_key? 'created_by'
-          attributes['created_by'] = User.find(attributes['created_by'])
+          attributes['created_by'] = User.find(attributes['created_by']) rescue nil
+        end
+        if attributes.has_key? 'updated_by'
+          attributes['updated_by'] = User.find(attributes['updated_by']) rescue nil
         end
       end
     end
