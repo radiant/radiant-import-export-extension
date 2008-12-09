@@ -23,11 +23,12 @@ namespace :db do
       end
     end
     setup.send :create_records, users_only
+    
     # Hack to get passwords transferred correctly.
     passwords.each do |id, password, salt|
       User.update_all({:password => password, :salt => salt}, ['id = ?', id])
     end
-    
+
     # Now load the created users into the hash and load the rest of the data
     data['records'].each do |klass, records|
       records.each do |key, attributes|
