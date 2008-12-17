@@ -14,6 +14,8 @@ module Radiant
                 r = model.new(record)
                 r.id = id
                 r.save
+                # UserActionObserver sets user to null, so we have to update explicitly
+                model.update_all({:created_by_id => record['created_by_id']}, {:id => r.id}) if r.respond_to? :created_by_id
               end
             end
           end
