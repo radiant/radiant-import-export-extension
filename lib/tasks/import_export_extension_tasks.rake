@@ -44,7 +44,7 @@ namespace :db do
   end
   
   desc "Export a database template to db/export_TIME.yml. Specify the TEMPLATE environment variable to use a different file."
-  task :export => ["db:schema:dump"] do
+  task :export do
     template_name = ENV['TEMPLATE'] || "#{RAILS_ROOT}/db/export_#{Time.now.utc.strftime("%Y%m%d%H%M%S")}.yml"
     File.open(template_name, "w") {|f| f.write Exporter.export }
   end
