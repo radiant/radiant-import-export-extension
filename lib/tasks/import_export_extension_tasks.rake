@@ -45,6 +45,11 @@ namespace :db do
   
   desc "Export a database template to db/export_TIME.yml. Specify the TEMPLATE environment variable to use a different file."
   task :export do
+    require "activerecord" if !defined?(ActiveRecord)
+    require "#{RAILS_ROOT}/config/environment.rb"
+    ActiveRecord::Base.establish_connection
+    require "#{File.expand_path(File.dirname(__FILE__) + '/../')}/loader.rb"
+    require "#{File.expand_path(File.dirname(__FILE__) + '/../')}/exporter.rb"
     template_name = ENV['TEMPLATE'] || "#{RAILS_ROOT}/db/export_#{Time.now.utc.strftime("%Y%m%d%H%M%S")}.yml"
     File.open(template_name, "w") {|f| f.write Exporter.export }
   end
