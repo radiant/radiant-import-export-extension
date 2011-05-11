@@ -12,6 +12,18 @@ namespace :db do
     # Load the data from the export file
     data = YAML.load_file(ENV['TEMPLATE'] || "#{RAILS_ROOT}/db/export.yml")
     
+    # Reorder Radiant::Config table to ensure ids are sequential with no gaps, to prevent load error
+    configs_in_order = data['records']['Radiant::Configs'].sort_by { |k,v| v['id'] }
+    new_configs = {}
+    configs_in_order.each do |attributes|
+      rec_id = configs_in_order.index(attributes) + 1
+      new_configs[rec_id.to_s] = {'id' => rec_id}
+      Radiant::Config.column_names.delete_if { |el| el == "id" }.each do |att|
+        new_configs[rec_id.to_s][att] = attributes[1][att]
+      end
+    end
+    data['records']['Radiant::Configs'].replace(new_configs)
+
     # Load the users first so created_by fields can be updated
     users_only = {'records' => {'Users' => data['records'].delete('Users')}}
     passwords = []
