@@ -11,11 +11,18 @@ module Radiant
             record_pairs = order_by_id(records[key])
             step do
               record_pairs.each do |id, record|
-                r = model.new(record)
-                r.id = id
-                r.save
-                # UserActionObserver sets user to null, so we have to update explicitly
-                model.update_all({:created_by_id => record['created_by_id']}, {:id => r.id}) if r.respond_to? :created_by_id
+                begin
+                  #puts "i: #{id}"
+                  #puts "r: #{record}"
+                  #puts
+                  r = model.new(record)
+                  r.id = id
+                  r.save
+                  # UserActionObserver sets user to null, so we have to update explicitly
+                  model.update_all({:created_by_id => record['created_by_id']}, {:id => r.id}) if r.respond_to? :created_by_id
+                rescue Exception => e
+                  puts "Failed to create record #{id}. Reason: #{e}"
+                end
               end
             end
           end
