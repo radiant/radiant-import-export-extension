@@ -6,6 +6,13 @@ module Loader
   def models_from_database
     tables = ActiveRecord::Base.connection.tables
     tables.delete "config"
+    if ENV['SKIP']
+      table_names = ENV['SKIP'].split(',')
+      table_names.each do |table_to_skip|
+        puts "Skipping #{table_to_skip}"
+        tables.delete table_to_skip.strip
+      end
+    end
     models = tables.collect { |table| table.camelize.singularize.constantize rescue nil || table.camelize.constantize rescue nil }.compact
     models << Radiant::Config
   end

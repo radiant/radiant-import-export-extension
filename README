@@ -9,8 +9,11 @@ To import use:
 
 To export, browse to /admin/export or use:
 
- $ rake db:export [TEMPLATE=path/to/export.yml]
+ $ rake db:export [SKIP="tabelname1,tablename2"] [TEMPLATE=path/to/export.yml]
  
 
 by Sean Cribbs
    April 18, 2007
+   
+Skip Addition by Johannes Fahrenkrug
+   September 22, 2009

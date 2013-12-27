@@ -53,10 +53,35 @@ namespace :db do
       end
     end
     setup.send :create_records, data
+    
+    # if env set, adjust the auto increment counter, needed for DB2
+    if ENV['FIXIDS']
+      puts
+      data['records'].each do |klass, records|
+        tabname = klass.to_s.singularize.constantize.table_name
+        
+        if ActiveRecord::Base.connection and !ActiveRecord::Base.connection.schema.to_s.empty?
+          tabname = ActiveRecord::Base.connection.schema.to_s + '.' + tabname
+        end
+      
+        res = ActiveRecord::Base.connection.select_value("SELECT max(id)+1 from #{tabname};")
+      
+        if res
+          puts "Adjusting auto increment value for the id column of #{tabname}..."
+          ActiveRecord::Base.connection.execute("alter table #{tabname} alter column id restart with #{res};")
+        end
+      end
+      puts 'Done.'
+    end
   end
   
   desc "Export a database template to db/export_TIME.yml. Specify the TEMPLATE environment variable to use a different file."
-  task :export => ["db:schema:dump"] do
+  task :export do
+    require "activerecord" if !defined?(ActiveRecord)
+    require "#{RAILS_ROOT}/config/environment.rb"
+    ActiveRecord::Base.establish_connection
+    require "#{File.expand_path(File.dirname(__FILE__) + '/../')}/loader.rb"
+    require "#{File.expand_path(File.dirname(__FILE__) + '/../')}/exporter.rb"
     template_name = ENV['TEMPLATE'] || "#{RAILS_ROOT}/db/export_#{Time.now.utc.strftime("%Y%m%d%H%M%S")}.yml"
     File.open(template_name, "w") {|f| f.write Exporter.export }
   end
