@@ -16,4 +16,14 @@ module Loader
     models = tables.collect { |table| table.camelize.singularize.constantize rescue nil || table.camelize.constantize rescue nil }.compact
     models << Radiant::Config
   end
+  
+  def join_tables_from_database
+    join_tables = []
+    ActiveRecord::Base.connection.tables.each do |table| 
+      unless ActiveRecord::Base.connection.primary_key(table)
+        join_tables << table
+      end
+    end
+    join_tables.compact
+  end
 end
