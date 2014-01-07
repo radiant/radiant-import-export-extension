@@ -5,7 +5,9 @@ module Radiant
       if records
         puts
         records.keys.each do |key|
-          if key == "Radiant::Configs" || ActiveRecord::Base.connection.primary_key(key.underscore)
+          table = key.underscore
+          # assume this is an ActiveRecord model if table has column 'id'
+          if key == "Radiant::Configs" || ActiveRecord::Base.connection.columns(table).map { |c| c.name }.include?("id")
             feedback "Importing '#{key.to_s.underscore.humanize.titleize}' table data" do
               model = model(key)
               model.reset_column_information
@@ -30,12 +32,17 @@ module Radiant
           else
              feedback "Importing '#{key.to_s.underscore.humanize.titleize}' join table data" do
                table = key.underscore
-               sql="INSERT INTO #{table} (#{records[key][1].keys.join(", ")}) VALUES "
-               records[key].each do |id, record|
-                 sql << "(#{record.values.join(", ")})"
-                 sql << ", " if id < records[key].count
-               end
-               ActiveRecord::Base.connection.insert_sql(sql)
+               record_pairs = records[key].sort
+               step do
+                 record_pairs.each do |id, record|
+                   begin
+                     sql = "INSERT INTO #{table} (#{record.keys.join(", ")}) VALUES (#{record.values.join(", ")})"
+                     ActiveRecord::Base.connection.execute(sql)
+                   rescue Exception => e
+                     puts "Failed to create record #{id}. Reason: #{e}"
+                   end
+                 end
+               end          
              end
           end
         end

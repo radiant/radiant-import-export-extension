@@ -19,9 +19,10 @@ module Loader
   
   def join_tables_from_database
     join_tables = []
+    excluded_tables = ["schema_migrations"]
     ActiveRecord::Base.connection.tables.each do |table| 
-      unless ActiveRecord::Base.connection.primary_key(table)
-        join_tables << table
+      unless ActiveRecord::Base.connection.columns(table).map { |c| c.name }.include?("id")
+        join_tables << table unless excluded_tables.include?(table)
       end
     end
     join_tables.compact
