@@ -2,9 +2,9 @@
 # require_dependency 'application'
 
 class ImportExportExtension < Radiant::Extension
-  version "0.1"
+  version ImportExport::VERSION
   description "Supports more flexible import and export to Radiant databases."
-  url "http://radiantcms.org"
+  url "https://github.com/radiant/radiant-import-export-extension"
  
   def activate
   end

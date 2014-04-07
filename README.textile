@@ -1,0 +1,47 @@
+h1. Import Export
+
+The *Import Export* extension supports an enhanced version of exporting your Radiant database, and 
+adds the ability to import the results of an export operation.
+
+h2. Installation
+
+Add this line to your application's Gemfile:  @gem 'radiant-import_export-extension'@
+And then execute:  @$ bundle@
+Or install it yourself as:  @$ gem install radiant-import_export-extension@
+
+h2. History
+
+* 2014-04-07 - Gemify [Andrew vonderLuft]
+* 2013-12-31 - added capability to import/export join tables [Andrew vonderLuft]
+* since then - "tweaks and enhancements":https://github.com/radiant/radiant-import-export-extension/commits/master
+* 2009-09-22 - Skip addition (ability to skip tables) [Johannes Fahrenkrug]
+* 2007-04-18 - First release [Sean Cribbs]
+
+h2. Usage
+
+* Import:  $ rake db:import [TEMPLATE=path/to/export.yml]
+* Export: $ rake db:export [SKIP="tabelname1,tablename2"] [TEMPLATE=path/to/export.yml]  (or browse to /admin/export )
+
+h2. Contributing
+
+# Fork it
+# Create your feature branch (`git checkout -b my-new-feature`)
+# Commit your changes (`git commit -am 'Add some feature'`)
+# Push to the branch (`git push origin my-new-feature`)
+# Create new Pull Request
+
+h2. To do
+
+* Import still not working with Oracle
+* Add more tests
+
+h2. "Contributors":https://github.com/radiant/radiant-import-export-extension/graphs/contributors
+
+* "Sean Cribbs":https://github.com/seancribbs
+* "Johannes Fahrenkrug":https://github.com/jfahrenkrug
+* "Drew Neil":https://github.com/nelstrom
+* "Istvan Hoka":https://github.com/ihoka
+* "Chris Parrish":https://github.com/chrisparrish
+* "Andrew vonderLuft":https://github.com/avonderluft
+* "et al.":https://github.com/radiant/radiant-import-export-extension/graphs/contributors
+
